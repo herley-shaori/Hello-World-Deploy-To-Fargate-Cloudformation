@@ -1,0 +1,2 @@
+# Cloudformation template untuk deployment Java Springboot ke AWS Fargate.
+Artikel dapat dibaca di https://herley-shaori.medium.com/pengembangan-java-springboot-menggunakan-aws-codepipeline-dan-aws-fargate-e5f6518fec43.
