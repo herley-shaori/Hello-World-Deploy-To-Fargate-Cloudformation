@@ -1,0 +1,64 @@
+Parameters:
+  SGPort:
+    Type: String
+    Default: 5000
+Resources:
+  DemoECSTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties: 
+      NetworkMode: awsvpc
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: arn:aws:iam::623127157773:role/ecsTaskExecutionRole
+      ContainerDefinitions: 
+        - Name: hello-world-container
+          Image: 623127157773.dkr.ecr.ap-southeast-1.amazonaws.com/demo-springboot-to-fargate-ecr:latest
+          PortMappings: 
+            - ContainerPort: 5000
+              HostPort: 5000
+          Memory: 512
+          Essential: true
+          Privileged: false
+          HealthCheck:
+            command:
+              - "CMD-SHELL"
+              - "curl -f http://localhost:5000/api/hello || exit 1"
+            interval: 60
+            retries: 2
+            timeout: 60
+      RequiresCompatibilities:
+        - FARGATE
+  DemoECSCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: demo-springboot-to-fargate-cluster
+      Tags:
+        - Key: department
+          Value: demo
+  ECSServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: SecurityGroup untuk ECS Service. Hanya membuka port 5000.
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: !Ref SGPort
+        IpProtocol: tcp
+        ToPort: !Ref SGPort
+  DemoECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: demo-springboot-to-fargate-service
+      TaskDefinition: !Ref DemoECSTask
+      Cluster: !Ref DemoECSCluster
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+          AwsvpcConfiguration: 
+              AssignPublicIp: ENABLED
+              Subnets:
+                - subnet-2c5cea4a
+              SecurityGroups: 
+                - !GetAtt ECSServiceSecurityGroup.GroupId
