@@ -86,3 +86,10 @@ Resources:
       Tags: 
         - Key: department
           Value: demo
+
+Outputs:
+  S3UntukCodePipelineOutput:
+    Description: Nama S3 Bucket.
+    Value: !Ref S3UntukCodePipeline
+    Export:
+      Name: CodePipelineS3Bucket 

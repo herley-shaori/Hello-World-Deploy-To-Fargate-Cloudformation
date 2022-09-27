@@ -3,6 +3,10 @@ Parameters:
     Type: String
     Default: demo-springboot-repository
     AllowedPattern: "[A-Za-z0-9-]+"
+  CodeBuildProjectName:
+    Type: String
+    Default: demo-springboot-to-fargate-codebuild-xxy
+    AllowedPattern: "[A-Za-z0-9-]+"
   SGPort:
     Type: String
     Default: 5000
@@ -15,17 +19,10 @@ Resources:
         Tags: 
           - Key: department
             Value: demo
-  S3UntukCodePipeline:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: bucket-untuk-code-build
-      Tags: 
-        - Key: department
-          Value: demo
   DemoCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: demo-springboot-to-fargate-codebuild
+      Name: !Ref CodeBuildProjectName
       Description: A description about my project
       ServiceRole: arn:aws:iam::623127157773:role/service-role/codebuild-hello-world-sederhana-service-role
       Artifacts:
@@ -44,13 +41,12 @@ Resources:
           Value: demo
   DemoCodePipeline:
     Type: AWS::CodePipeline::Pipeline
-    DependsOn: S3UntukCodePipeline
     Properties:
       Name: demo-springboot-to-fargate-codepipeline
       RoleArn: arn:aws:iam::623127157773:role/service-role/AWSCodePipelineServiceRole-ap-southeast-1-Unsimple-Hello-World
       ArtifactStore:
         Type: S3
-        Location: bucket-untuk-code-build
+        Location: !ImportValue CodePipelineS3Bucket
       Stages:
         - Name: Source
           Actions:
@@ -77,7 +73,7 @@ Resources:
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: demo-springboot-to-fargate-codebuild
+              ProjectName: !Ref CodeBuildProjectName
             OutputArtifacts:
             - Name: BuiltCode
             RunOrder: 2

@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name myteststack-satu --template-body file://cd.yaml

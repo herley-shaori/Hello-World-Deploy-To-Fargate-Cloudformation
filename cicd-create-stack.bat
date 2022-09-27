@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name myteststack-dua --template-body file://cicd.yaml
