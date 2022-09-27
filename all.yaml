@@ -40,8 +40,8 @@ Resources:
         - Key: department
           Value: demo
   DemoCodePipeline:
-    DependsOn: S3UntukCodePipeline
     Type: AWS::CodePipeline::Pipeline
+    DependsOn: S3UntukCodePipeline
     Properties:
       Name: demo-springboot-to-fargate-codepipeline
       RoleArn: arn:aws:iam::623127157773:role/service-role/AWSCodePipelineServiceRole-ap-southeast-1-Unsimple-Hello-World
