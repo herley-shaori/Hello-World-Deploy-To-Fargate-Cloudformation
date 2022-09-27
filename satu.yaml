@@ -3,6 +3,10 @@ Parameters:
     Type: String
     Default: demo-springboot-repository
     AllowedPattern: "[A-Za-z0-9-]+"
+  CodeBuildName:
+    Type: String
+    Default: demo-springboot-to-fargate-codebuild
+    AllowedPattern: "[A-Za-z0-9-]+"
 Resources:
   DemoCodeCommit:
     Type: AWS::CodeCommit::Repository
@@ -22,8 +26,8 @@ Resources:
   DemoCodeBuild:
     Type: AWS::CodeBuild::Project
     Properties:
-      Name: demo-springboot-to-fargate-codebuild
-      Description: A description about my project
+      Name: !Ref CodeBuildName
+      Description: Demo CodeBuild untuk untuk tutorial deploy Java Springboot ke AWS Fargate.
       ServiceRole: arn:aws:iam::623127157773:role/service-role/codebuild-hello-world-sederhana-service-role
       Artifacts:
         Type: no_artifacts
@@ -74,7 +78,7 @@ Resources:
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: demo-springboot-to-fargate-codebuild
+              ProjectName: !Ref CodeBuildName
             OutputArtifacts:
             - Name: BuiltCode
             RunOrder: 2
