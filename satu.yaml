@@ -86,8 +86,17 @@ Resources:
       Tags: 
         - Key: department
           Value: demo
-
 Outputs:
+  CodeCommitOutput:
+    Description: Nama CodeCommit.
+    Value: !GetAtt DemoCodeCommit.Name
+    Export:
+      Name: CodeCommitName
+  CodeBuildOutput:
+    Description: Nama CodeBuild.
+    Value: !Ref DemoCodeBuild
+    Export:
+      Name: CodeBuildProjectName
   S3UntukCodePipelineOutput:
     Description: Nama S3 Bucket.
     Value: !Ref S3UntukCodePipeline

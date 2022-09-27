@@ -1,0 +1,1 @@
+aws cloudformation create-stack --stack-name stack-dua --template-body file://dua.yaml

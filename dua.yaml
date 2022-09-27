@@ -1,48 +1,16 @@
 Parameters:
-  CodeCommitRepoName:
+  CodePipelineName:
     Type: String
-    Default: demo-springboot-repository
-    AllowedPattern: "[A-Za-z0-9-]+"
-  CodeBuildProjectName:
-    Type: String
-    Default: demo-springboot-to-fargate-codebuild-xxy
+    Default: demo-springboot-to-fargate-codepipeline-fullstack
     AllowedPattern: "[A-Za-z0-9-]+"
   SGPort:
     Type: String
     Default: 5000
 Resources:
-  DemoCodeCommit:
-      Type: AWS::CodeCommit::Repository
-      Properties: 
-        RepositoryDescription: Kode program untuk tutorial deploy Java Springboot ke AWS Fargate.
-        RepositoryName: !Ref CodeCommitRepoName
-        Tags: 
-          - Key: department
-            Value: demo
-  DemoCodeBuild:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Ref CodeBuildProjectName
-      Description: A description about my project
-      ServiceRole: arn:aws:iam::623127157773:role/service-role/codebuild-hello-world-sederhana-service-role
-      Artifacts:
-        Type: no_artifacts
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
-        PrivilegedMode: true
-      Source:
-        Location: https://git-codecommit.ap-southeast-1.amazonaws.com/v1/repos/demo-springboot-repository
-        Type: CODECOMMIT
-      TimeoutInMinutes: 10
-      Tags:
-        - Key: department
-          Value: demo
   DemoCodePipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: demo-springboot-to-fargate-codepipeline
+      Name: !Ref CodePipelineName
       RoleArn: arn:aws:iam::623127157773:role/service-role/AWSCodePipelineServiceRole-ap-southeast-1-Unsimple-Hello-World
       ArtifactStore:
         Type: S3
@@ -59,7 +27,7 @@ Resources:
             OutputArtifacts:
             - Name: SourceCode
             Configuration:
-              RepositoryName: !Ref CodeCommitRepoName
+              RepositoryName: !ImportValue CodeCommitName
               BranchName: master
             RunOrder: 1
         - Name: Build
@@ -73,7 +41,7 @@ Resources:
               Version: 1
               Provider: CodeBuild
             Configuration:
-              ProjectName: !Ref CodeBuildProjectName
+              ProjectName: !ImportValue CodeBuildProjectName
             OutputArtifacts:
             - Name: BuiltCode
             RunOrder: 2
